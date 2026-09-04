@@ -205,4 +205,29 @@ renderDate();
 // تشغيل احتياطي بعد تحميل العناصر
 window.addEventListener('load', renderDate);
 
+// --- إدارة الوضع الداكن (Dark Mode) ---
+let isDarkMode = JSON.parse(localStorage.getItem('budget_dark_mode')) || false;
+
+function applyTheme() {
+  const btn = document.getElementById('themeToggleBtn');
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+    if (btn) btn.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark-mode');
+    if (btn) btn.textContent = '🌙';
+  }
+}
+
+function toggleDarkMode() {
+  isDarkMode = !isDarkMode;
+  localStorage.setItem('budget_dark_mode', JSON.stringify(isDarkMode));
+  applyTheme();
+}
+
+// تطبيق الثيم فور تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+});
+
 updateUI();
