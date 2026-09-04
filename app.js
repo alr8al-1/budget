@@ -178,36 +178,31 @@ function resetMonth() {
 }
 let isGregorian = true;
 
-function updateDate() {
+function renderDate() {
   const dateElement = document.getElementById('date-display');
   if (!dateElement) return;
 
   const today = new Date();
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
 
   if (isGregorian) {
-    // ميلادي بأرقام إنجليزية سريعة وواضحة
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const year = today.getFullYear();
     dateElement.textContent = `${year}/${month}/${day} م`;
   } else {
-    // هجري بأرقام
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     dateElement.textContent = today.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn', options) + ' هـ';
   }
 }
 
-// تشغيل الكود بمجرد تحضير عناصر الصفحة
-document.addEventListener('DOMContentLoaded', () => {
-  updateDate();
-  
-  const dateElement = document.getElementById('date-display');
-  if (dateElement) {
-    dateElement.addEventListener('click', () => {
-      isGregorian = !isGregorian;
-      updateDate();
-    });
-  }
-});
+function toggleDateFormat() {
+  isGregorian = !isGregorian;
+  renderDate();
+}
+
+// تشغيل فوري
+renderDate();
+// تشغيل احتياطي بعد تحميل العناصر
+window.addEventListener('load', renderDate);
 
 updateUI();
