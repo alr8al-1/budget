@@ -176,7 +176,6 @@ function resetMonth() {
     toggleSettingsModal();
   }
 }
-// --- كود عرض التاريخ والتبديل ---
 let isGregorian = true;
 
 function updateDate() {
@@ -187,15 +186,18 @@ function updateDate() {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
 
   if (isGregorian) {
-    // ميلادي بأرقام فقط (مثال: 04/09/2026 م)
-    dateElement.textContent = today.toLocaleDateString('en-GB', options) + ' م';
+    // ميلادي بأرقام إنجليزية سريعة وواضحة
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    dateElement.textContent = `${year}/${month}/${day} م`;
   } else {
-    // هجري بأرقام فقط (مثال: 22/02/1448 هـ)
+    // هجري بأرقام
     dateElement.textContent = today.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn', options) + ' هـ';
   }
 }
 
-// التشغيل أول ما تفتح الصفحة والربط بالنقر
+// تشغيل الكود بمجرد تحضير عناصر الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   updateDate();
   
