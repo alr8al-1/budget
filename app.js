@@ -19,30 +19,44 @@ function saveData() {
 // Daily Limit Calculation based on user-defined inputs
 function calculateDailyLimit() {
   const totalSpentExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const remainingExpensesBudget = config.expensesBudget - totalSpentExpenses;
-  const days = config.customDays > 0 ? config.customDays : 30;
+  const totalBudget = config.expensesBudget;
+  const totalDays = config.customDays > 0 ? config.customDays : 30;
 
-  if (remainingExpensesBudget <= 0) {
-    return { dailyLimit: 0, remainingExpensesBudget: 0, daysLeft: days };
+  // المصروف اليومي الأساسي المفترض لو صرفت بالتساوي
+  const baseDaily = totalBudget / totalDays;
+
+  // معرفة التاريخ الأول لشروع الميزانية (أو بداية الاستخدام)
+  let startDate = localStorage.getItem('budget_start_date');
+  if (!startDate) {
+    startDate = new Date().toISOString();
+    localStorage.setItem('budget_start_date', startDate);
   }
 
-  // حساب مصاريف اليوم الحالي فقط
-  const todaySpent = expenses
-    .filter(e => new Date(e.date).toDateString() === new Date().toDateString())
-    .reduce((sum, e) => sum + e.amount, 0);
+  // حساب كم يوم مر منذ بداية الخطة (اليوم الأول = 1)
+  const start = new Date(startDate);
+  const now = new Date();
+  start.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
+  
+  const diffTime = Math.abs(now - start);
+  const elapsedDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-  // ميزانية اليوم الأساسية = المتبقي الكلي مقسوماً على الأيام + ما تم صرفه اليوم
-  const baseDailyBudget = (remainingExpensesBudget + todaySpent) / days;
+  // إجمالي الميزانية المستحقة حتى نهاية هذا اليوم (بما فيها الأيام السابقة)
+  const accumulatedBudgetToDate = baseDaily * Math.min(elapsedDays, totalDays);
 
-  // الحد المتبقي لليوم = ميزانية اليوم - المصروف اليومي
-  const dailyLimit = baseDailyBudget - todaySpent;
+  // الحد المتبقي لليوم الحالي = (الميزانية التراكمية حتى اليوم) - (إجمالي ما تم صرفه)
+  const dailyLimit = accumulatedBudgetToDate - totalSpentExpenses;
+
+  // المتبقي الكلي للمصاريف الشهرية
+  const remainingExpensesBudget = totalBudget - totalSpentExpenses;
 
   return {
-    dailyLimit: Math.max(0, dailyLimit),
-    remainingExpensesBudget,
-    daysLeft: days
+    dailyLimit: dailyLimit, // يسمح بالظهور بالسالب إذا تعديت الحد
+    remainingExpensesBudget: Math.max(0, remainingExpensesBudget),
+    daysLeft: Math.max(0, totalDays - elapsedDays + 1)
   };
 }
+
 
 
 // UI Updater
