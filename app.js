@@ -10,6 +10,25 @@ let config = JSON.parse(localStorage.getItem('budget_config')) || {
 let expenses = JSON.parse(localStorage.getItem('budget_expenses')) || [];
 let gasExpenses = JSON.parse(localStorage.getItem('budget_gas_expenses')) || [];
 
+function createId() {
+  return 't_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function ensureItemIds(list) {
+  let changed = false;
+  list.forEach((item) => {
+    if (!item.id) {
+      item.id = createId();
+      changed = true;
+    }
+  });
+  return changed;
+}
+
+if (ensureItemIds(expenses) | ensureItemIds(gasExpenses)) {
+  saveData();
+}
+
 function saveData() {
   try {
     localStorage.setItem('budget_config', JSON.stringify(config));
@@ -48,12 +67,34 @@ function calculateDailyLimit() {
   return {
     dailyLimit: dailyLimit,
     remainingExpensesBudget: Math.max(0, remainingExpensesBudget),
-    daysLeft: Math.max(0, totalDays - elapsedDays + 1)
+    daysLeft: Math.max(0, totalDays - elapsedDays + 1),
+    baseDaily: baseDaily
   };
 }
 
+function updateBudgetStatus(dailyLimit, baseDaily) {
+  const statusPill = document.getElementById('statusPill');
+  if (!statusPill) return;
+
+  const percent = baseDaily > 0 ? (dailyLimit / baseDaily) * 100 : 0;
+
+  statusPill.classList.remove('status-excellent', 'status-medium', 'status-low');
+
+  if (percent >= 75) {
+    statusPill.textContent = 'وضع الميزانية ممتازة 👍';
+    statusPill.classList.add('status-excellent');
+  } else if (percent > 25) {
+    statusPill.textContent = 'الميزانية متوسطة';
+    statusPill.classList.add('status-medium');
+  } else {
+    statusPill.textContent = 'الميزانية قليلة اضبط وضعك';
+    statusPill.classList.add('status-low');
+  }
+}
+
 function updateUI() {
-  const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
+  const { dailyLimit, remainingExpensesBudget, daysLeft, baseDaily } = calculateDailyLimit();
+  updateBudgetStatus(dailyLimit, baseDaily);
 
   const dailyElem = document.getElementById('dailyLimitVal');
   dailyElem.innerText = dailyLimit.toFixed(1);
@@ -90,14 +131,44 @@ function renderHistory() {
   }
 
   list.innerHTML = allItems.map(item => `
-    <li class="history-item">
+    <li class="history-item" data-id="${item.id}" data-type="${item.type}">
       <div>
         <strong>${item.desc}</strong>
         <small>${new Date(item.date).toLocaleDateString('ar-SA')}</small>
       </div>
-      <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
+      <div class="history-actions">
+        <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
+        <button type="button" class="btn-delete" data-id="${item.id}" data-type="${item.type}" aria-label="حذف">حذف</button>
+      </div>
     </li>
   `).join('');
+
+  // Attach safe click listeners to delete buttons (avoids inline onclick quoting issues)
+  list.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      const type = e.currentTarget.getAttribute('data-type');
+      deleteTransaction(id, type);
+    });
+  });
+}
+
+function deleteTransaction(id, type) {
+  const isGas = type === 'gas';
+  const message = isGas
+    ? 'حذف تعبئة البنزين وإرجاع المبلغ لميزانية البنزين؟'
+    : 'حذف هذا المصروف وإرجاع المبلغ للميزانية؟';
+
+  if (!confirm(message)) return;
+
+  if (isGas) {
+    gasExpenses = gasExpenses.filter((item) => item.id !== id);
+  } else {
+    expenses = expenses.filter((item) => item.id !== id);
+  }
+
+  saveData();
+  updateUI();
 }
 
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
@@ -108,7 +179,7 @@ function submitExpense() {
   const amount = parseFloat(document.getElementById('expAmount').value);
 
   if (amount && amount > 0) {
-    expenses.push({ desc, amount, date: new Date().toISOString() });
+    expenses.push({ id: createId(), desc, amount, date: new Date().toISOString() });
     saveData();
     updateUI();
     closeExpenseModal();
@@ -123,7 +194,7 @@ function closeGasModal() { document.getElementById('gasModal').classList.remove(
 function submitGas() {
   const amount = parseFloat(document.getElementById('gasAmount').value);
   if (amount && amount > 0) {
-    gasExpenses.push({ amount, date: new Date().toISOString() });
+    gasExpenses.push({ id: createId(), amount, date: new Date().toISOString() });
     saveData();
     updateUI();
     closeGasModal();
@@ -200,9 +271,35 @@ function toggleDateFormat() {
   renderDate();
 }
 
+// Dark mode support
+function applyDarkMode(enabled) {
+  document.body.classList.toggle('dark', enabled);
+  const btn = document.getElementById('darkModeBtn');
+  if (btn) btn.textContent = enabled ? '☀️' : '🌙';
+  try {
+    localStorage.setItem('budget_dark_mode', enabled ? '1' : '0');
+  } catch (e) {
+    // ignore
+  }
+}
+
+function toggleDarkMode() {
+  applyDarkMode(!document.body.classList.contains('dark'));
+}
+
 // تشغيل فوري
 renderDate();
 // تشغيل احتياطي بعد تحميل العناصر
 window.addEventListener('load', renderDate);
+
+// Initialize dark mode from preference
+try {
+  const darkPref = localStorage.getItem('budget_dark_mode');
+  if (darkPref === '1') applyDarkMode(true);
+} catch (e) {}
+
+// Hook dark mode button
+const darkBtn = document.getElementById('darkModeBtn');
+if (darkBtn) darkBtn.addEventListener('click', toggleDarkMode);
 
 updateUI();
