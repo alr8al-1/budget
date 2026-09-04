@@ -38,12 +38,15 @@ body {
 .header-right h1 {
   font-size: 20px;
   font-weight: 700;
+  color: #1c1c1e;
 }
 
 .header-date {
   font-size: 13px;
   color: #8e8e93;
   font-weight: 500;
+  direction: ltr;
+  display: inline-block;
 }
 
 .btn-icon {
@@ -64,7 +67,7 @@ body {
 /* Main Daily Budget Card */
 .main-card {
   background: linear-gradient(135deg, #007aff, #0056b3);
-  color: white;
+  color: #ffffff;
   border-radius: 20px;
   padding: 24px 20px;
   text-align: center;
@@ -76,6 +79,7 @@ body {
   font-size: 14px;
   opacity: 0.9;
   margin-bottom: 8px;
+  color: #ffffff;
 }
 
 .daily-limit {
@@ -83,12 +87,14 @@ body {
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 4px;
+  color: #ffffff;
 }
 
 .currency {
   font-size: 14px;
   opacity: 0.85;
   margin-bottom: 12px;
+  color: #ffffff;
 }
 
 .status-badge {
@@ -99,6 +105,7 @@ body {
   font-size: 12px;
   backdrop-filter: blur(5px);
   margin-bottom: 16px;
+  color: #ffffff;
 }
 
 .card-stats {
@@ -112,16 +119,18 @@ body {
   font-size: 11px;
   opacity: 0.8;
   display: block;
+  color: #ffffff;
 }
 
 .stat-item .value {
   font-size: 18px;
   font-weight: 700;
+  color: #ffffff;
 }
 
 /* Secondary Cards */
 .card {
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 16px;
@@ -137,6 +146,7 @@ body {
 
 .card-header h3 {
   font-size: 16px;
+  color: #1c1c1e;
 }
 
 .sub-text {
@@ -172,11 +182,12 @@ body {
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
-  transition: transform 0.1s active;
+  transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-primary:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  background: #2fb350;
 }
 
 .btn-secondary {
@@ -256,7 +267,7 @@ body {
 }
 
 .modal-content {
-  background: white;
+  background: #ffffff;
   border-radius: 20px;
   padding: 24px;
   width: 100%;
@@ -273,6 +284,7 @@ body {
 .modal-content h2 {
   font-size: 18px;
   margin-bottom: 16px;
+  color: #1c1c1e;
 }
 
 .form-group {
@@ -294,6 +306,7 @@ body {
   border-radius: 10px;
   font-size: 15px;
   background: #f9f9f9;
+  color: #1c1c1e;
 }
 
 .modal-actions {
@@ -326,4 +339,9 @@ body {
   color: white;
   width: 100%;
   margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
 }
