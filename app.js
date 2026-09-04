@@ -53,6 +53,9 @@ function calculateDailyLimit() {
 }
 
 function updateUI() {
+  // أضف هذا السطر داخل دالة updateUI()
+document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-SA', { day: 'numeric', month: 'short' });
+
   const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
 
   const dailyElem = document.getElementById('dailyLimitVal');
