@@ -15,9 +15,9 @@ body {
 
 .app-header {
   background: #ffffff;
-  /* إضافة هامش أمان للهواتف ذات النوتش والجزيرة التفاعلية */
-  padding-top: calc(env(safe-area-inset-top) + 12px);
-  padding-bottom: 12px;
+  /* مسافة علوية كافية تنزل العنوان والأيقونة تحت النوتش والجزيرة التفاعلية */
+  padding-top: max(47px, env(safe-area-inset-top));
+  padding-bottom: 14px;
   padding-left: 20px;
   padding-right: 20px;
   display: flex;
@@ -28,6 +28,7 @@ body {
   top: 0;
   z-index: 10;
 }
+
 
 
 .app-header h1 { font-size: 20px; font-weight: 700; }
