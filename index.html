@@ -9,21 +9,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="ميزانيتي">
-  <link rel="apple-touch-icon"href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
 </head>
 <body>
 
   <header class="app-header">
-  <h1>حاسبة المكافأة</h1>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span id="date-display" onclick="toggleDateFormat()" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.85rem; font-weight: bold; color: var(--text-color, #555); background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #ddd); padding: 4px 10px; border-radius: 6px;"></span>
-    <button class="btn-icon" id="themeToggleBtn" onclick="toggleDarkMode()" title="تغيير المظهر">🌙</button>
-    <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
-  </div>
-</header>
+    <h1>حاسبة المكافأة</h1>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span id="date-display" onclick="toggleDateFormat()" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.8rem; font-weight: bold; color: var(--text-color); background: var(--bg-color); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px;"></span>
+      <button class="btn-icon" id="themeBtn" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
+    </div>
+  </header>
 
   <main class="container">
-    <!-- كارت الحد اليومي -->
     <section class="card main-card">
       <div class="card-subtitle">حدك المسموح للصرف اليوم</div>
       <div class="daily-limit-amount" id="dailyLimitVal">0.00</div>
@@ -44,14 +43,13 @@
       </div>
     </section>
 
-    <!-- كارت البنزين -->
     <section class="card gas-card">
       <div class="gas-header">
         <div class="gas-title">
           <span class="gas-icon">⛽</span>
           <div>
             <h3>ميزانية البنزين</h3>
-            <small class="text-muted">مستقلة عن المصاريف اليومية</small>
+            <small style="color: var(--subtext-color);">مستقلة عن المصاريف اليومية</small>
           </div>
         </div>
         <div class="gas-amount">
@@ -64,13 +62,12 @@
       <button class="btn-secondary" onclick="openGasModal()">+ تسجيل تعبئة بنزين</button>
     </section>
 
-    <!-- كارت الادخار -->
     <section class="card savings-card">
       <div class="savings-content">
         <span class="savings-icon">🔒</span>
         <div>
           <h3>الادخار المحمي</h3>
-          <p>مبلغ مجمد لا يمس من المكافأة</p>
+          <p style="font-size: 12px; color: var(--subtext-color);">مبلغ مجمد لا يمس من المكافأة</p>
         </div>
         <div class="savings-value" id="savingsVal">190 ريال</div>
       </div>
@@ -78,7 +75,6 @@
 
     <button class="btn-primary-lg" onclick="openExpenseModal()">+ إضافة مصروف جديد</button>
 
-    <!-- سجل العمليات -->
     <section class="card history-card">
       <h3>سجل العمليات الأخيرة</h3>
       <ul class="history-list" id="historyList">
@@ -87,7 +83,6 @@
     </section>
   </main>
 
-  <!-- Modals -->
   <div class="modal" id="expenseModal">
     <div class="modal-content">
       <h3>تسجيل مصروف</h3>
