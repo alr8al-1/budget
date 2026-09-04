@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ميزانيتي - المساعد الذكي للمكافأة</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -17,6 +17,7 @@
   <h1>حاسبة المكافأة</h1>
   <div style="display: flex; align-items: center; gap: 10px;">
     <span id="date-display" onclick="toggleDateFormat()" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.85rem; font-weight: bold; color: #555; background: #ffffff; border: 1px solid #ddd; padding: 4px 10px; border-radius: 6px;"></span>
+    <button class="btn-icon" id="darkModeBtn" title="تبديل الوضع الداكن">🌙</button>
     <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
   </div>
 </header>
@@ -27,7 +28,7 @@
       <div class="card-subtitle">حدك المسموح للصرف اليوم</div>
       <div class="daily-limit-amount" id="dailyLimitVal">0.00</div>
       <div class="currency">ريال سعودي</div>
-      <div class="status-pill" id="statusPill">وضع الميزانية ممتاز 👍</div>
+      <div class="status-pill" id="statusPill">وضع الميزانية ممتازة 👍</div>
 
       <div class="stats-grid">
         <div class="stat-box">
@@ -146,6 +147,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
