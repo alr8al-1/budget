@@ -28,20 +28,29 @@ function getDaysRemainingInMonth() {
   return remaining > 0 ? remaining : 1;
 }
 
+// Helper to format float display nicely (up to 2 decimals)
+function formatMoney(amount) {
+  return Number(amount).toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
 // Update UI
 function updateUI() {
   // Date Display
   document.getElementById('currentDate').innerText = formatDate(new Date());
 
   // Expenses Calculations
-  const totalSpentExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalSpentExpenses = expenses.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
   const expensesRemaining = Math.max(0, config.expensesAllocated - totalSpentExpenses);
   const daysRemaining = getDaysRemainingInMonth();
   
-  const dailyLimit = (expensesRemaining / daysRemaining).toFixed(1);
+  const dailyLimit = (expensesRemaining / daysRemaining);
 
-  document.getElementById('dailyLimitVal').innerText = dailyLimit;
-  document.getElementById('totalExpensesRemaining').innerText = expensesRemaining.toFixed(0);
+  // العرض بدقة خانتين عشريتين بدون التضحية بالفواصل
+  document.getElementById('dailyLimitVal').innerText = formatMoney(dailyLimit);
+  document.getElementById('totalExpensesRemaining').innerText = formatMoney(expensesRemaining);
   document.getElementById('daysRemaining').innerText = daysRemaining;
 
   // Badge Status
@@ -58,11 +67,11 @@ function updateUI() {
   }
 
   // Gas Calculations
-  const totalSpentGas = gasExpenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalSpentGas = gasExpenses.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
   const gasRemaining = Math.max(0, config.gasAllocated - totalSpentGas);
   
-  document.getElementById('gasRemaining').innerText = gasRemaining.toFixed(0);
-  document.getElementById('gasTotalAlloc').innerText = config.gasAllocated;
+  document.getElementById('gasRemaining').innerText = formatMoney(gasRemaining);
+  document.getElementById('gasTotalAlloc').innerText = formatMoney(config.gasAllocated);
 
   const gasPercent = config.gasAllocated > 0 ? (gasRemaining / config.gasAllocated) * 100 : 0;
   const gasProgressBar = document.getElementById('gasProgressBar');
@@ -75,7 +84,7 @@ function updateUI() {
   }
 
   // Savings
-  document.getElementById('savingsVal').innerText = `${config.savingsAllocated} ريال`;
+  document.getElementById('savingsVal').innerText = `${formatMoney(config.savingsAllocated)} ريال`;
 
   // Render History List
   renderHistory();
@@ -109,7 +118,7 @@ function renderHistory() {
         <strong>${title}</strong>
         <small>${item.time}</small>
       </div>
-      <span class="${amountClass}">-${item.amount} ريال</span>
+      <span class="${amountClass}">-${formatMoney(item.amount)} ريال</span>
     `;
     historyList.appendChild(li);
   });
