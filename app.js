@@ -20,6 +20,7 @@ function saveData() {
   }
 }
 
+// Daily Limit Calculation with rolling dynamic logic
 function calculateDailyLimit() {
   const totalSpentExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalBudget = config.expensesBudget;
@@ -53,17 +54,23 @@ function calculateDailyLimit() {
 }
 
 function updateUI() {
-  // أضف هذا السطر داخل دالة updateUI()
-document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-SA', { day: 'numeric', month: 'short' });
-
   const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
 
+  // تحديث الرقم اليومي ولونه في حال السالب
   const dailyElem = document.getElementById('dailyLimitVal');
-  dailyElem.innerText = dailyLimit.toFixed(1);
-  if (dailyLimit < 0) {
-    dailyElem.style.color = '#ff3b30'; // تحويل اللون للأحمر في حال السالب
-  } else {
-    dailyElem.style.color = '#ffffff';
+  if (dailyElem) {
+    dailyElem.innerText = dailyLimit.toFixed(1);
+    dailyElem.style.color = dailyLimit < 0 ? '#ff3b30' : '#ffffff';
+  }
+
+  // تحديث التاريخ الميلادي بالأرقام (سنة/شهر/يوم)
+  const currentDateElem = document.getElementById('currentDate');
+  if (currentDateElem) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    currentDateElem.innerText = `${yyyy}/${mm}/${dd}`;
   }
 
   document.getElementById('totalExpensesRemaining').innerText = remainingExpensesBudget.toFixed(0);
@@ -96,13 +103,14 @@ function renderHistory() {
     <li class="history-item">
       <div>
         <strong>${item.desc}</strong>
-        <small>${new Date(item.date).toLocaleDateString('ar-SA')}</small>
+        <small>${new Date(item.date).toLocaleDateString('en-GB')}</small>
       </div>
       <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
     </li>
   `).join('');
 }
 
+// Actions & Modals
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
 function closeExpenseModal() { document.getElementById('expenseModal').classList.remove('active'); }
 
@@ -180,4 +188,5 @@ function resetMonth() {
   }
 }
 
+// Run on load
 updateUI();
