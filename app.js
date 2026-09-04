@@ -176,5 +176,33 @@ function resetMonth() {
     toggleSettingsModal();
   }
 }
+// تحديد التنسيق الافتراضي (ميلادي)
+let isGregorian = true;
+
+const dateElement = document.getElementById('date-display');
+
+function updateDate() {
+  const today = new Date();
+
+  if (isGregorian) {
+    // التاريخ الميلادي بأرقام فقط (مثال: 04/09/2026)
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    // استخدام التقويم الميلادي المباشر
+    dateElement.textContent = today.toLocaleDateString('en-GB', options) + ' (ميلادي)';
+  } else {
+    // التاريخ الهجري بأرقام فقط (مثال: 22/02/1448)
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    dateElement.textContent = today.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn', options) + ' (هجري)';
+  }
+}
+
+// تشغيل الدالة لأول مرة عند تحميل الصفحة
+updateDate();
+
+// عند الضغط على التاريخ، يتم التبديل بين الميلادي والهجري
+dateElement.addEventListener('click', () => {
+  isGregorian = !isGregorian;
+  updateDate();
+});
 
 updateUI();
