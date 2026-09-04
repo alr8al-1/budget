@@ -16,7 +16,7 @@ body {
 /* Header with Safe Area for iPhone Notch / Dynamic Island */
 .app-header {
   background: #ffffff;
-  padding-top: max(47px, env(safe-area-inset-top));
+  padding-top: max(17px, env(safe-area-inset-top));
   padding-bottom: 14px;
   padding-left: 20px;
   padding-right: 20px;
