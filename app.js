@@ -1,46 +1,4 @@
-let isGregorian = JSON.parse(localStorage.getItem('budget_is_gregorian')) ?? true;
-let isDarkMode = JSON.parse(localStorage.getItem('budget_dark_mode')) ?? false;
-
-function applyTheme() {
-  const btn = document.getElementById('themeBtn');
-  if (isDarkMode) {
-    document.body.classList.add('dark-mode');
-    if (btn) btn.textContent = '☀️';
-  } else {
-    document.body.classList.remove('dark-mode');
-    if (btn) btn.textContent = '🌙';
-  }
-}
-
-function toggleDarkMode() {
-  isDarkMode = !isDarkMode;
-  localStorage.setItem('budget_dark_mode', JSON.stringify(isDarkMode));
-  applyTheme();
-}
-
-function renderDate() {
-  const dateElement = document.getElementById('date-display');
-  if (!dateElement) return;
-
-  const today = new Date();
-
-  if (isGregorian) {
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    dateElement.textContent = `${year}/${month}/${day} م`;
-  } else {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    dateElement.textContent = today.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn', options) + ' هـ';
-  }
-}
-
-function toggleDateFormat() {
-  isGregorian = !isGregorian;
-  localStorage.setItem('budget_is_gregorian', JSON.stringify(isGregorian));
-  renderDate();
-}
-
+// Data State Setup
 let config = JSON.parse(localStorage.getItem('budget_config')) || {
   totalAllowance: 990,
   expensesBudget: 400,
@@ -58,7 +16,7 @@ function saveData() {
     localStorage.setItem('budget_expenses', JSON.stringify(expenses));
     localStorage.setItem('budget_gas_expenses', JSON.stringify(gasExpenses));
   } catch (e) {
-    console.error("خطأ بالحفظ", e);
+    console.error("خطأ في حفظ البيانات محلياً", e);
   }
 }
 
@@ -98,41 +56,29 @@ function updateUI() {
   const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
 
   const dailyElem = document.getElementById('dailyLimitVal');
-  if (dailyElem) {
-    dailyElem.innerText = dailyLimit.toFixed(1);
-    dailyElem.style.color = dailyLimit < 0 ? '#ff3b30' : '#ffffff';
+  dailyElem.innerText = dailyLimit.toFixed(1);
+  if (dailyLimit < 0) {
+    dailyElem.style.color = '#ff3b30'; // تحويل اللون للأحمر في حال السالب
+  } else {
+    dailyElem.style.color = '#ffffff';
   }
 
-  const remainingElem = document.getElementById('totalExpensesRemaining');
-  if (remainingElem) remainingElem.innerText = remainingExpensesBudget.toFixed(0);
-
-  const daysElem = document.getElementById('daysRemaining');
-  if (daysElem) daysElem.innerText = daysLeft;
+  document.getElementById('totalExpensesRemaining').innerText = remainingExpensesBudget.toFixed(0);
+  document.getElementById('daysRemaining').innerText = daysLeft;
 
   const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
   const gasRemaining = Math.max(0, config.gasBudget - totalGasSpent);
-  
-  const gasRemElem = document.getElementById('gasRemaining');
-  if (gasRemElem) gasRemElem.innerText = gasRemaining;
+  document.getElementById('gasRemaining').innerText = gasRemaining;
+  document.getElementById('gasTotalAlloc').innerText = config.gasBudget;
+  document.getElementById('gasProgressBar').style.width = Math.min(100, Math.max(0, (gasRemaining / config.gasBudget) * 100)) + '%';
 
-  const gasTotalElem = document.getElementById('gasTotalAlloc');
-  if (gasTotalElem) gasTotalElem.innerText = config.gasBudget;
-
-  const progressBar = document.getElementById('gasProgressBar');
-  if (progressBar) {
-    progressBar.style.width = Math.min(100, Math.max(0, (gasRemaining / config.gasBudget) * 100)) + '%';
-  }
-
-  const savingsElem = document.getElementById('savingsVal');
-  if (savingsElem) savingsElem.innerText = config.savingsBudget + ' ريال';
+  document.getElementById('savingsVal').innerText = config.savingsBudget + ' ريال';
 
   renderHistory();
 }
 
 function renderHistory() {
   const list = document.getElementById('historyList');
-  if (!list) return;
-
   const allItems = [
     ...expenses.map(e => ({ ...e, type: 'exp' })),
     ...gasExpenses.map(g => ({ ...g, type: 'gas', desc: 'تعبئة بنزين ⛽' }))
@@ -143,19 +89,15 @@ function renderHistory() {
     return;
   }
 
-  list.innerHTML = allItems.map(item => {
-    const d = new Date(item.date);
-    const formattedDate = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
-    return `
-      <li class="history-item">
-        <div>
-          <strong>${item.desc}</strong>
-          <br><small style="color: var(--subtext-color);">${formattedDate}</small>
-        </div>
-        <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
-      </li>
-    `;
-  }).join('');
+  list.innerHTML = allItems.map(item => `
+    <li class="history-item">
+      <div>
+        <strong>${item.desc}</strong>
+        <small>${new Date(item.date).toLocaleDateString('ar-SA')}</small>
+      </div>
+      <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
+    </li>
+  `).join('');
 }
 
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
@@ -234,9 +176,33 @@ function resetMonth() {
     toggleSettingsModal();
   }
 }
+let isGregorian = true;
 
-document.addEventListener('DOMContentLoaded', () => {
-  applyTheme();
+function renderDate() {
+  const dateElement = document.getElementById('date-display');
+  if (!dateElement) return;
+
+  const today = new Date();
+
+  if (isGregorian) {
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    dateElement.textContent = `${year}/${month}/${day} م`;
+  } else {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    dateElement.textContent = today.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn', options) + ' هـ';
+  }
+}
+
+function toggleDateFormat() {
+  isGregorian = !isGregorian;
   renderDate();
-  updateUI();
-});
+}
+
+// تشغيل فوري
+renderDate();
+// تشغيل احتياطي بعد تحميل العناصر
+window.addEventListener('load', renderDate);
+
+updateUI();
