@@ -15,8 +15,9 @@
 
   <header class="app-header">
   <h1>حاسبة المكافأة</h1>
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <span id="date-display" onclick="toggleDateFormat()" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.85rem; font-weight: bold; color: #555; background: #ffffff; border: 1px solid #ddd; padding: 4px 10px; border-radius: 6px;"></span>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span id="date-display" onclick="toggleDateFormat()" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.85rem; font-weight: bold; color: var(--text-color, #555); background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #ddd); padding: 4px 10px; border-radius: 6px;"></span>
+    <button class="btn-icon" id="themeToggleBtn" onclick="toggleDarkMode()" title="تغيير المظهر">🌙</button>
     <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
   </div>
 </header>
