@@ -16,6 +16,8 @@ body {
 .app-header {
   background: #ffffff;
   padding: 16px 20px;
+  /* الهامش العلوي الخاص بحماية النوتش وشريط البطارية في الآيفون */
+  padding-top: calc(16px + env(safe-area-inset-top)); 
   display: flex;
   justify-content: space-between;
   align-items: center;
