@@ -26,7 +26,16 @@ function calculateDailyLimit() {
     return { dailyLimit: 0, remainingExpensesBudget: 0, daysLeft: days };
   }
 
-  const dailyLimit = remainingExpensesBudget / days;
+  // حساب مصاريف اليوم الحالي فقط
+  const todaySpent = expenses
+    .filter(e => new Date(e.date).toDateString() === new Date().toDateString())
+    .reduce((sum, e) => sum + e.amount, 0);
+
+  // ميزانية اليوم الأساسية = المتبقي الكلي مقسوماً على الأيام + ما تم صرفه اليوم
+  const baseDailyBudget = (remainingExpensesBudget + todaySpent) / days;
+
+  // الحد المتبقي لليوم = ميزانية اليوم - المصروف اليومي
+  const dailyLimit = baseDailyBudget - todaySpent;
 
   return {
     dailyLimit: Math.max(0, dailyLimit),
@@ -34,6 +43,7 @@ function calculateDailyLimit() {
     daysLeft: days
   };
 }
+
 
 // UI Updater
 function updateUI() {
