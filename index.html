@@ -2,17 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ميزانيتي - المساعد الذكي للمكافأة</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>حاسبة المكافأة</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ميزانيتي">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="app-header">
+  <!-- Header -->
+  <header class="app-header">
     <div class="header-right">
       <h1>حاسبة المكافأة</h1>
       <span class="header-date" id="currentDate"></span>
@@ -20,129 +19,134 @@
     <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
   </header>
 
-
+  <!-- Main Container -->
   <main class="container">
-    <!-- كارت الحد اليومي -->
-    <section class="card main-card">
-      <div class="card-subtitle">حدك المسموح للصرف اليوم</div>
-      <div class="daily-limit-amount" id="dailyLimitVal">0.00</div>
-      <div class="currency">ريال سعودي</div>
-      <div class="status-pill" id="statusPill">وضع الميزانية ممتاز 👍</div>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <span class="stat-label">المتبقي من المصاريف</span>
-          <span class="stat-value" id="totalExpensesRemaining">0</span>
-          <span class="stat-unit">ريال</span>
+    <!-- Daily Limit Card -->
+    <section class="main-card">
+      <div class="card-title">حدك المسموح للصرف اليوم</div>
+      <div class="daily-limit" id="dailyLimitVal">0.0</div>
+      <div class="currency">ريال سعودي</div>
+      <div class="status-badge" id="statusBadge">وضع الميزانية ممتاز 👍</div>
+
+      <div class="card-stats">
+        <div class="stat-item">
+          <span class="label">المتبقي من المصاريف</span>
+          <span class="value"><span id="totalExpensesRemaining">0</span> ريال</span>
         </div>
-        <div class="stat-box">
-          <span class="stat-label">الأيام المتبقية بالشهر</span>
-          <span class="stat-value" id="daysRemaining">0</span>
-          <span class="stat-unit">يوم</span>
+        <div class="stat-item">
+          <span class="label">الأيام المتبقية بالشهر</span>
+          <span class="value"><span id="daysRemaining">0</span> يوم</span>
         </div>
       </div>
     </section>
 
-    <!-- كارت البنزين -->
-    <section class="card gas-card">
-      <div class="gas-header">
-        <div class="gas-title">
-          <span class="gas-icon">⛽</span>
-          <div>
-            <h3>ميزانية البنزين</h3>
-            <small class="text-muted">مستقلة عن المصاريف اليومية</small>
-          </div>
+    <!-- Gas Budget Card -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>ميزانية البنزين ⛽</h3>
+          <span class="sub-text">مستقلة عن المصاريف اليومية</span>
         </div>
-        <div class="gas-amount">
-          <span id="gasRemaining">400</span> <small>/ <span id="gasTotalAlloc">400</span> ريال</small>
+        <div>
+          <strong><span id="gasRemaining">0</span> / <span id="gasTotalAlloc">0</span> ريال</strong>
         </div>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="gasProgressBar" style="width: 100%;"></div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="gasProgressBar"></div>
       </div>
       <button class="btn-secondary" onclick="openGasModal()">+ تسجيل تعبئة بنزين</button>
     </section>
 
-    <!-- كارت الادخار -->
-    <section class="card savings-card">
-      <div class="savings-content">
-        <span class="savings-icon">🔒</span>
+    <!-- Savings Card -->
+    <section class="card">
+      <div class="card-header">
         <div>
-          <h3>الادخار المحمي</h3>
-          <p>مبلغ مجمد لا يمس من المكافأة</p>
+          <h3>الادخار المحمي 🔒</h3>
+          <span class="sub-text">مبلغ مجمد لا يمس من المكافأة</span>
         </div>
-        <div class="savings-value" id="savingsVal">190 ريال</div>
+        <div>
+          <strong id="savingsVal">0 ريال</strong>
+        </div>
       </div>
     </section>
 
-    <button class="btn-primary-lg" onclick="openExpenseModal()">+ إضافة مصروف جديد</button>
+    <!-- Add Expense Button -->
+    <button class="btn-primary" onclick="openExpenseModal()">+ إضافة مصروف جديد</button>
 
-    <!-- سجل العمليات -->
-    <section class="card history-card">
-      <h3>سجل العمليات الأخيرة</h3>
+    <!-- History Section -->
+    <section class="card" style="margin-top: 16px;">
+      <h3 style="margin-bottom: 12px;">سجل العمليات الأخيرة</h3>
       <ul class="history-list" id="historyList">
         <li class="empty-state">لا يوجد مصاريف مسجلة هذا الشهر</li>
       </ul>
     </section>
+
   </main>
 
-  <!-- Modals -->
+  <!-- Expense Modal -->
   <div class="modal" id="expenseModal">
     <div class="modal-content">
-      <h3>تسجيل مصروف</h3>
+      <h2>إضافة مصروف جديد</h2>
       <div class="form-group">
-        <label>الوصف</label>
-        <input type="text" id="expDesc" placeholder="مثال: غداء، قهوة...">
+        <label>الوصف (اختياري)</label>
+        <input type="text" id="expDesc" placeholder="مثلاً: غداء، كافيه...">
       </div>
       <div class="form-group">
         <label>المبلغ (ريال)</label>
-        <input type="number" id="expAmount" placeholder="0.00" step="0.5">
+        <input type="number" id="expAmount" placeholder="0.0" step="any">
       </div>
       <div class="modal-actions">
-        <button class="btn-primary" onclick="submitExpense()">حفظ الخصم</button>
+        <button class="btn-submit" onclick="submitExpense()">حفظ المصروف</button>
         <button class="btn-cancel" onclick="closeExpenseModal()">إلغاء</button>
       </div>
     </div>
   </div>
 
+  <!-- Gas Modal -->
   <div class="modal" id="gasModal">
     <div class="modal-content">
-      <h3>تعبئة بنزين ⛽</h3>
+      <h2>تسجيل تعبئة بنزين ⛽</h2>
       <div class="form-group">
-        <label>مبلغ التعبئة (ريال)</label>
-        <input type="number" id="gasAmount" placeholder="مثال: 50" step="1">
+        <label>المبلغ (ريال)</label>
+        <input type="number" id="gasAmount" placeholder="0.0" step="any">
       </div>
       <div class="modal-actions">
-        <button class="btn-primary" onclick="submitGas()">خصم من البنزين</button>
+        <button class="btn-submit" onclick="submitGas()">حفظ</button>
         <button class="btn-cancel" onclick="closeGasModal()">إلغاء</button>
       </div>
     </div>
   </div>
 
+  <!-- Settings Modal -->
   <div class="modal" id="settingsModal">
     <div class="modal-content">
-      <h3>إعدادات خطة المكافأة</h3>
+      <h2>إعدادات الميزانية ⚙️</h2>
       <div class="form-group">
-        <label>المكافأة الكلية (ريال)</label>
-        <input type="number" id="cfgTotal" value="990">
+        <label>إجمالي المكافأة</label>
+        <input type="number" id="cfgTotal">
       </div>
       <div class="form-group">
-        <label>ميزانية المصاريف اليومية (ريال)</label>
-        <input type="number" id="cfgExpenses" value="400">
+        <label>ميزانية المصاريف اليومية</label>
+        <input type="number" id="cfgExpenses">
       </div>
       <div class="form-group">
-        <label>ميزانية البنزين (ريال)</label>
-        <input type="number" id="cfgGas" value="400">
+        <label>ميزانية البنزين</label>
+        <input type="number" id="cfgGas">
       </div>
       <div class="form-group">
-        <label>مبلغ الادخار (ريال)</label>
-        <input type="number" id="cfgSavings" value="190">
+        <label>مبلغ الادخار المحمي</label>
+        <input type="number" id="cfgSavings">
+      </div>
+      <div class="form-group">
+        <label>عدد الأيام للحسبة</label>
+        <input type="number" id="cfgDays">
       </div>
       <div class="modal-actions">
-        <button class="btn-primary" onclick="saveSettings()">حفظ الخطة</button>
-        <button class="btn-danger" onclick="resetMonth()">بدء شهر جديد 🔄</button>
-        <button class="btn-cancel" onclick="toggleSettingsModal()">إغلاق</button>
+        <button class="btn-submit" onclick="saveSettings()">حفظ التغيرات</button>
+        <button class="btn-cancel" onclick="toggleSettingsModal()">إلغاء</button>
       </div>
+      <button class="btn-danger" onclick="resetMonth()">تصفير لبدء شهر جديد</button>
     </div>
   </div>
 
