@@ -4,66 +4,65 @@ let config = JSON.parse(localStorage.getItem('budget_config')) || {
   expensesBudget: 400,
   gasBudget: 400,
   savingsBudget: 190,
-  customDays: 30 // عدد الأيام الافتراضي
+  customDays: 30
 };
 
 let expenses = JSON.parse(localStorage.getItem('budget_expenses')) || [];
 let gasExpenses = JSON.parse(localStorage.getItem('budget_gas_expenses')) || [];
 
 function saveData() {
-  localStorage.setItem('budget_config', JSON.stringify(config));
-  localStorage.setItem('budget_expenses', JSON.stringify(expenses));
-  localStorage.setItem('budget_gas_expenses', JSON.stringify(gasExpenses));
+  try {
+    localStorage.setItem('budget_config', JSON.stringify(config));
+    localStorage.setItem('budget_expenses', JSON.stringify(expenses));
+    localStorage.setItem('budget_gas_expenses', JSON.stringify(gasExpenses));
+  } catch (e) {
+    console.error("خطأ في حفظ البيانات محلياً", e);
+  }
 }
 
-// Daily Limit Calculation based on user-defined inputs
 function calculateDailyLimit() {
   const totalSpentExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalBudget = config.expensesBudget;
   const totalDays = config.customDays > 0 ? config.customDays : 30;
 
-  // المصروف اليومي الأساسي المفترض لو صرفت بالتساوي
   const baseDaily = totalBudget / totalDays;
 
-  // معرفة التاريخ الأول لشروع الميزانية (أو بداية الاستخدام)
   let startDate = localStorage.getItem('budget_start_date');
   if (!startDate) {
     startDate = new Date().toISOString();
     localStorage.setItem('budget_start_date', startDate);
   }
 
-  // حساب كم يوم مر منذ بداية الخطة (اليوم الأول = 1)
   const start = new Date(startDate);
   const now = new Date();
   start.setHours(0, 0, 0, 0);
   now.setHours(0, 0, 0, 0);
-  
+
   const diffTime = Math.abs(now - start);
   const elapsedDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-  // إجمالي الميزانية المستحقة حتى نهاية هذا اليوم (بما فيها الأيام السابقة)
   const accumulatedBudgetToDate = baseDaily * Math.min(elapsedDays, totalDays);
-
-  // الحد المتبقي لليوم الحالي = (الميزانية التراكمية حتى اليوم) - (إجمالي ما تم صرفه)
   const dailyLimit = accumulatedBudgetToDate - totalSpentExpenses;
-
-  // المتبقي الكلي للمصاريف الشهرية
   const remainingExpensesBudget = totalBudget - totalSpentExpenses;
 
   return {
-    dailyLimit: dailyLimit, // يسمح بالظهور بالسالب إذا تعديت الحد
+    dailyLimit: dailyLimit,
     remainingExpensesBudget: Math.max(0, remainingExpensesBudget),
     daysLeft: Math.max(0, totalDays - elapsedDays + 1)
   };
 }
 
-
-
-// UI Updater
 function updateUI() {
   const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
 
-  document.getElementById('dailyLimitVal').innerText = dailyLimit.toFixed(1);
+  const dailyElem = document.getElementById('dailyLimitVal');
+  dailyElem.innerText = dailyLimit.toFixed(1);
+  if (dailyLimit < 0) {
+    dailyElem.style.color = '#ff3b30'; // تحويل اللون للأحمر في حال السالب
+  } else {
+    dailyElem.style.color = '#ffffff';
+  }
+
   document.getElementById('totalExpensesRemaining').innerText = remainingExpensesBudget.toFixed(0);
   document.getElementById('daysRemaining').innerText = daysLeft;
 
@@ -101,7 +100,6 @@ function renderHistory() {
   `).join('');
 }
 
-// Actions
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
 function closeExpenseModal() { document.getElementById('expenseModal').classList.remove('active'); }
 
@@ -141,8 +139,7 @@ function toggleSettingsModal() {
     document.getElementById('cfgExpenses').value = config.expensesBudget;
     document.getElementById('cfgGas').value = config.gasBudget;
     document.getElementById('cfgSavings').value = config.savingsBudget;
-    
-    // إدراج مدخل الأيام في الشاشة إذا لم يكن موجوداً
+
     let daysInput = document.getElementById('cfgDays');
     if (!daysInput) {
       const formGroup = document.createElement('div');
@@ -160,7 +157,7 @@ function saveSettings() {
   config.expensesBudget = parseFloat(document.getElementById('cfgExpenses').value) || 400;
   config.gasBudget = parseFloat(document.getElementById('cfgGas').value) || 400;
   config.savingsBudget = parseFloat(document.getElementById('cfgSavings').value) || 190;
-  
+
   const daysVal = parseFloat(document.getElementById('cfgDays').value);
   config.customDays = daysVal > 0 ? daysVal : 30;
 
@@ -173,6 +170,7 @@ function resetMonth() {
   if (confirm('تصفير المصاريف وبدء شهر جديد؟')) {
     expenses = [];
     gasExpenses = [];
+    localStorage.setItem('budget_start_date', new Date().toISOString());
     saveData();
     updateUI();
     toggleSettingsModal();
