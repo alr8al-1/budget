@@ -1,6 +1,12 @@
+// Data State Setup
 let config = JSON.parse(localStorage.getItem('budget_config')) || {
-  totalAllowance: 990, expensesBudget: 400, gasBudget: 400, savingsBudget: 190
+  totalAllowance: 990,
+  expensesBudget: 400,
+  gasBudget: 400,
+  savingsBudget: 190,
+  customDays: 30 // عدد الأيام الافتراضي
 };
+
 let expenses = JSON.parse(localStorage.getItem('budget_expenses')) || [];
 let gasExpenses = JSON.parse(localStorage.getItem('budget_gas_expenses')) || [];
 
@@ -10,24 +16,26 @@ function saveData() {
   localStorage.setItem('budget_gas_expenses', JSON.stringify(gasExpenses));
 }
 
-function getDaysRemainingInMonth() {
-  const now = new Date();
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-  return daysInMonth - now.getDate() + 1;
-}
-
+// Daily Limit Calculation based on user-defined inputs
 function calculateDailyLimit() {
   const totalSpentExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const remainingExpensesBudget = config.expensesBudget - totalSpentExpenses;
-  const daysLeft = getDaysRemainingInMonth();
-  if (daysLeft <= 0) return { dailyLimit: 0, remainingExpensesBudget: 0, daysLeft: 0 };
+  const days = config.customDays > 0 ? config.customDays : 30;
+
+  if (remainingExpensesBudget <= 0) {
+    return { dailyLimit: 0, remainingExpensesBudget: 0, daysLeft: days };
+  }
+
+  const dailyLimit = remainingExpensesBudget / days;
+
   return {
-    dailyLimit: Math.max(0, remainingExpensesBudget / daysLeft),
+    dailyLimit: Math.max(0, dailyLimit),
     remainingExpensesBudget,
-    daysLeft
+    daysLeft: days
   };
 }
 
+// UI Updater
 function updateUI() {
   const { dailyLimit, remainingExpensesBudget, daysLeft } = calculateDailyLimit();
 
@@ -38,7 +46,9 @@ function updateUI() {
   const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
   const gasRemaining = Math.max(0, config.gasBudget - totalGasSpent);
   document.getElementById('gasRemaining').innerText = gasRemaining;
-  document.getElementById('gasProgressBar').style.width = Math.min(100, (gasRemaining / config.gasBudget) * 100) + '%';
+  document.getElementById('gasTotalAlloc').innerText = config.gasBudget;
+  document.getElementById('gasProgressBar').style.width = Math.min(100, Math.max(0, (gasRemaining / config.gasBudget) * 100)) + '%';
+
   document.getElementById('savingsVal').innerText = config.savingsBudget + ' ريال';
 
   renderHistory();
@@ -67,16 +77,21 @@ function renderHistory() {
   `).join('');
 }
 
+// Actions
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
 function closeExpenseModal() { document.getElementById('expenseModal').classList.remove('active'); }
 
 function submitExpense() {
   const desc = document.getElementById('expDesc').value.trim() || 'مصروف عام';
   const amount = parseFloat(document.getElementById('expAmount').value);
-  if (amount > 0) {
+
+  if (amount && amount > 0) {
     expenses.push({ desc, amount, date: new Date().toISOString() });
-    saveData(); updateUI(); closeExpenseModal();
-    document.getElementById('expDesc').value = ''; document.getElementById('expAmount').value = '';
+    saveData();
+    updateUI();
+    closeExpenseModal();
+    document.getElementById('expDesc').value = '';
+    document.getElementById('expAmount').value = '';
   }
 }
 
@@ -85,27 +100,58 @@ function closeGasModal() { document.getElementById('gasModal').classList.remove(
 
 function submitGas() {
   const amount = parseFloat(document.getElementById('gasAmount').value);
-  if (amount > 0) {
+  if (amount && amount > 0) {
     gasExpenses.push({ amount, date: new Date().toISOString() });
-    saveData(); updateUI(); closeGasModal();
+    saveData();
+    updateUI();
+    closeGasModal();
     document.getElementById('gasAmount').value = '';
   }
 }
 
-function toggleSettingsModal() { document.getElementById('settingsModal').classList.toggle('active'); }
+function toggleSettingsModal() {
+  const modal = document.getElementById('settingsModal');
+  modal.classList.toggle('active');
+  if (modal.classList.contains('active')) {
+    document.getElementById('cfgTotal').value = config.totalAllowance;
+    document.getElementById('cfgExpenses').value = config.expensesBudget;
+    document.getElementById('cfgGas').value = config.gasBudget;
+    document.getElementById('cfgSavings').value = config.savingsBudget;
+    
+    // إدراج مدخل الأيام في الشاشة إذا لم يكن موجوداً
+    let daysInput = document.getElementById('cfgDays');
+    if (!daysInput) {
+      const formGroup = document.createElement('div');
+      formGroup.className = 'form-group';
+      formGroup.innerHTML = '<label>عدد الأيام للحسبة</label><input type="number" id="cfgDays" value="' + config.customDays + '">';
+      document.querySelector('#settingsModal .modal-content .form-group').after(formGroup);
+    } else {
+      daysInput.value = config.customDays;
+    }
+  }
+}
 
 function saveSettings() {
   config.totalAllowance = parseFloat(document.getElementById('cfgTotal').value) || 990;
   config.expensesBudget = parseFloat(document.getElementById('cfgExpenses').value) || 400;
   config.gasBudget = parseFloat(document.getElementById('cfgGas').value) || 400;
   config.savingsBudget = parseFloat(document.getElementById('cfgSavings').value) || 190;
-  saveData(); updateUI(); toggleSettingsModal();
+  
+  const daysVal = parseFloat(document.getElementById('cfgDays').value);
+  config.customDays = daysVal > 0 ? daysVal : 30;
+
+  saveData();
+  updateUI();
+  toggleSettingsModal();
 }
 
 function resetMonth() {
-  if (confirm('تصفير وتعديل الشهر الجديد؟')) {
-    expenses = []; gasExpenses = [];
-    saveData(); updateUI(); toggleSettingsModal();
+  if (confirm('تصفير المصاريف وبدء شهر جديد؟')) {
+    expenses = [];
+    gasExpenses = [];
+    saveData();
+    updateUI();
+    toggleSettingsModal();
   }
 }
 
