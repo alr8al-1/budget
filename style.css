@@ -16,7 +16,7 @@ body {
 .app-header {
   background: #ffffff;
   /* مسافة علوية كافية تنزل العنوان والأيقونة تحت النوتش والجزيرة التفاعلية */
-  padding-top: max(27px, env(safe-area-inset-top));
+  padding-top: max(15px, env(safe-area-inset-top));
   padding-bottom: 14px;
   padding-left: 20px;
   padding-right: 20px;
