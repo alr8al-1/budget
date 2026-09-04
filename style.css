@@ -59,6 +59,14 @@ body {
   margin: 16px 0;
 }
 
+.status-pill.status-medium {
+  background: rgba(255, 204, 0, 0.35);
+}
+
+.status-pill.status-low {
+  background: rgba(255, 59, 48, 0.45);
+}
+
 .stats-grid {
   display: flex;
   justify-content: space-around;
@@ -93,9 +101,20 @@ body {
 }
 
 .history-list { list-style: none; }
-.history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
+.history-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
+.history-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .history-amount { font-weight: 700; color: #ff3b30; }
 .history-amount.gas { color: #ff9500; }
+.btn-delete {
+  background: #fff2f2;
+  color: #ff3b30;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
 .empty-state { text-align: center; color: #8e8e93; font-size: 13px; }
 
 .modal {
@@ -111,3 +130,43 @@ body {
 .btn-primary { padding: 12px; background: #007aff; color: white; border: none; border-radius: 10px; font-weight: 600; }
 .btn-cancel { padding: 12px; background: #e5e5ea; color: #3a3a3c; border: none; border-radius: 10px; }
 .btn-danger { padding: 12px; background: #ff3b30; color: white; border: none; border-radius: 10px; }
+
+/* Dark mode styles */
+body.dark {
+  background-color: #0b0b0d;
+  color: #e5e7eb;
+}
+body.dark .card {
+  background: #0f1720;
+  color: #e5e7eb;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+body.dark .main-card {
+  background: linear-gradient(135deg, #0b1220 0%, #071126 100%);
+  color: #ffffff;
+}
+body.dark .status-pill { background: rgba(255,255,255,0.04); }
+body.dark .progress-bar-bg { background: #111827; }
+body.dark .modal-content { background: #0b1220; color: #e5e7eb; }
+body.dark .btn-primary { background: #0a84ff; }
+body.dark .btn-primary-lg { background: #10b981; }
+body.dark .btn-cancel { background: #1f2937; color: #e5e7eb; }
+body.dark .btn-delete { background: #331111; color: #ff7b7b; }
+
+/* Header and date display in dark mode */
+body.dark .app-header {
+  background: #071026;
+  border-bottom-color: rgba(255,255,255,0.04);
+}
+body.dark .app-header h1 {
+  color: #e5e7eb;
+}
+body.dark .btn-icon { color: #e5e7eb; }
+
+/* Override inline styles on #date-display when dark */
+body.dark #date-display {
+  background: #0b1220 !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
