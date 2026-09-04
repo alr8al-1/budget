@@ -14,9 +14,12 @@
 <body>
 
   <header class="app-header">
-    <h1>حاسبة المكافأة</h1>
+  <h1>حاسبة المكافأة</h1>
+  <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+    <span id="date-display" title="اضغط للتبديل بين الميلادي والهجري" style="cursor: pointer; user-select: none; font-size: 0.9rem; background: rgba(255, 255, 255, 0.15); padding: 4px 8px; border-radius: 6px;"></span>
     <button class="btn-icon" onclick="toggleSettingsModal()">⚙️</button>
-  </header>
+  </div>
+</header>
 
   <main class="container">
     <!-- كارت الحد اليومي -->
