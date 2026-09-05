@@ -1,4 +1,4 @@
-name: Build iOS IPA
+name: Build iOS App
 
 on:
   push:
@@ -7,35 +7,41 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-latest
-
+    runs-on: macos-13
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install Capacitor & Setup Project
+      - name: Install Dependencies
         run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/ios
-          npx cap init "MyBudget" "com.mybudget.app" --web-dir .
-          npx cap add ios
+          npm install
           npx cap sync ios
 
-      - name: Build Xcode Project (Unsigned IPA)
+      - name: Build Xcode Project
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release clean build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
-          mkdir -p Payload
-          mv build/Release-iphoneos/App.app Payload/
+          xcodebuild build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Create Payload & Zip IPA
+        run: |
+          cd ios/App/build/Build/Products/Release-iphoneos
+          mkdir Payload
+          mv App.app Payload/
           zip -r MyBudget.ipa Payload
 
       - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: MyBudget-IPA
-          path: ios/App/MyBudget.ipa
+          path: ios/App/build/Build/Products/Release-iphoneos/MyBudget.ipa
