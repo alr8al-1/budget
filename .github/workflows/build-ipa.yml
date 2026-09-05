@@ -17,9 +17,16 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Dependencies
+      - name: Install Dependencies & Prepare Web Files
         run: |
-          npm install
+          npm install @capacitor/core @capacitor/cli @capacitor/ios
+          
+          # إنشاء مجلد www ونقل ملفات الويب إليه
+          mkdir -p www
+          cp -r *.html *.css *.js *.json www/ 2>/dev/null || true
+          
+          # تنفيذ المزامنة وإنشاء مشروع iOS
+          npx cap add ios || true
           npx cap sync ios
 
       - name: Build Xcode Project
