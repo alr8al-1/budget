@@ -191,16 +191,51 @@ function submitExpense() {
 function openGasModal() { document.getElementById('gasModal').classList.add('active'); }
 function closeGasModal() { document.getElementById('gasModal').classList.remove('active'); }
 
+function addGasExpense(amount) {
+  const gasAmount = parseFloat(amount);
+  if (!gasAmount || gasAmount <= 0) return false;
+
+  if (config.gasBudget <= 0) {
+    alert('ميزانية البنزين صفر');
+    return false;
+  }
+
+  const totalSpentGas = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
+  const gasRemaining = Math.max(0, config.gasBudget - totalSpentGas);
+
+  if (gasRemaining <= 0) {
+    alert('ميزانية البنزين انتهت');
+    return false;
+  }
+
+  if (gasAmount > gasRemaining) {
+    alert('الميزانية غير كافية، المتبقي من البنزين: ' + gasRemaining + ' ريال');
+    return false;
+  }
+
+  gasExpenses.push({ id: createId(), amount: gasAmount, date: new Date().toISOString() });
+  saveData();
+  updateUI();
+  return true;
+}
+
 function submitGas() {
   const amount = parseFloat(document.getElementById('gasAmount').value);
-  if (amount && amount > 0) {
-    gasExpenses.push({ id: createId(), amount, date: new Date().toISOString() });
-    saveData();
-    updateUI();
+  if (!amount || amount <= 0) return;
+
+  if (addGasExpense(amount)) {
     closeGasModal();
     document.getElementById('gasAmount').value = '';
   }
 }
+
+document.querySelectorAll('.gas-shortcut').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (addGasExpense(btn.getAttribute('data-gas-amount'))) {
+      // No extra UI action needed; quick buttons add directly.
+    }
+  });
+});
 
 function toggleSettingsModal() {
   const modal = document.getElementById('settingsModal');
