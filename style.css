@@ -28,7 +28,12 @@ body {
   z-index: 10;
 }
 
-.app-header h1 { font-size: 20px; font-weight: 700; }
+@font-face{
+  font-family: "saudi";
+  src:url("SaudiWeb-Bold.woff") format("woff");
+}
+
+.app-header h1 { font-size: 20px; font-weight: 700; font-family: "saudi"; }
 .btn-icon { background: none; border: none; font-size: 22px; cursor: pointer; }
 .container { max-width: 440px; margin: 0 auto; padding: 16px; }
 
