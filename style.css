@@ -80,7 +80,7 @@ body {
 }
 
 .stat-box { display: flex; flex-direction: column; align-items: center; }
-.stat-label { font-size: 11px; opacity: 0.8; }
+.stat-label { font-size: 11px; opacity: 0.8; font-family: "saudi";}
 .stat-value { font-size: 18px; font-weight: 700; }
 .stat-unit { font-size: 10px; opacity: 0.7; }
 
