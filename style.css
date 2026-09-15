@@ -9,8 +9,11 @@
 body {
   background-color: #f2f2f7;
   color: #1c1c1e;
-  padding-bottom: 40px;
   direction: rtl;
+  position: relative; /* مهم جداً لكي يعمل absolute بشكل صحيح */
+  min-height: 100vh; /* يجعل طول الصفحة على الأقل بحجم الشاشة */
+  padding-bottom: 80px; /* هذه المساحة ستمنع السجل من لمس الكلمة */
+  margin: 0;
 }
 
 .app-header {
@@ -28,12 +31,12 @@ body {
   z-index: 10;
 }
 
-@font-face{
-  font-family: "saudi";
+@font-face {
+  font-family: "Saudi";
   src:url("SaudiWeb-Bold.woff") format("woff");
 }
 
-.app-header h1 { font-size: 20px; font-weight: 700; font-family: "saudi"; }
+.app-header h1 { font-size: 20px; font-weight: 700; font-family: "Saudi";}
 .btn-icon { background: none; border: none; font-size: 22px; cursor: pointer; }
 .container { max-width: 440px; margin: 0 auto; padding: 16px; }
 
@@ -51,9 +54,9 @@ body {
   text-align: center;
 }
 
-.card-subtitle { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+.card-subtitle { font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-family: "saudi" ; }
 .daily-limit-amount { font-size: 48px; font-weight: 800; line-height: 1.1; }
-.currency { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+.currency { font-size: 14px; opacity: 0.8; margin-top: 4px; font-family: "saudi"; }
 
 .status-pill {
   display: inline-block;
@@ -80,15 +83,30 @@ body {
 }
 
 .stat-box { display: flex; flex-direction: column; align-items: center; }
-.stat-label { font-size: 11px; opacity: 0.8; font-family: "saudi";}
+.stat-label { font-size: 11px; opacity: 0.8; font-family: "Saudi"; }
 .stat-value { font-size: 18px; font-weight: 700; }
-.stat-unit { font-size: 10px; opacity: 0.7; }
+.stat-unit { font-size: 10px; opacity: 0.7;}
 
-.gas-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.gas-title { display: flex; align-items: center; gap: 10px; }
-.gas-amount { font-size: 18px; font-weight: 700; }
+.gas-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: "Saudi"; }
+.gas-title { display: flex; align-items: center; gap: 10px; font-family: "Saudi"; }
+.gas-amount { font-size: 18px; font-weight: 700; font-family: "Saudi"; }
 .progress-bar-bg { background: #e5e5ea; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
 .progress-bar-fill { background: #ff9500; height: 100%; transition: width 0.3s ease; }
+.gast{ font-family: "Saudi"; }
+.text-muted { font-family: "Saudi"; }
+.btn-secondary {font-size: 20px; font-family: "Saudi"; }
+.savv h3{font-family: "saudi";}
+.savv p{font-family: "saudi";}
+#sgl{font-size: 25px;font-family: "saudi";}
+.empty-state{font-family: "saudi";}
+.btn-primary-lg{font-family: "saudi";}
+#statusPill{font-family: "saudi"; font-size: 15px;}
+.btn-primary{font-family: "saudi";}
+.btn-cancel{font-family: "saudi";}
+.modal-content h3 , label{font-family: "saudi";}
+.btn-danger{font-family: "saudi";}
+.history-list{font-family: "saudi";}
+.container{font-family: 'saudi', sans-serif !important;}
 
 .savings-card { background: #f0fdf4; border: 1px solid #bbf7d0; }
 .savings-content { display: flex; align-items: center; gap: 12px; }
@@ -105,35 +123,11 @@ body {
   border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
 }
 
-.gas-shortcuts {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(44px, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.gas-shortcut {
-  background: #fff7ed;
-  color: #b45309;
-  border: 1px solid #fed7aa;
-  border-radius: 10px;
-  padding: 8px 4px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.gas-shortcut:hover {
-  background: #fed7aa;
-  transform: translateY(-2px);
-}
-
-.history-list { list-style: none; }
-.history-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
-.history-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.history-amount { font-weight: 700; color: #ff3b30; }
-.history-amount.gas { color: #ff9500; }
+.history-list { list-style: none; font-family: "saudi";}
+.history-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; font-family: "saudi"; }
+.history-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; font-family: "saudi";}
+.history-amount { font-size: 22px;font-weight: 700; color: #ff3b30; font-family: "saudi";}
+.history-amount.gas { color: #ff9500; font-family: "saudi";}
 .btn-delete {
   background: #fff2f2;
   color: #ff3b30;
@@ -182,14 +176,6 @@ body.dark .btn-primary { background: #0a84ff; }
 body.dark .btn-primary-lg { background: #10b981; }
 body.dark .btn-cancel { background: #1f2937; color: #e5e7eb; }
 body.dark .btn-delete { background: #331111; color: #ff7b7b; }
-body.dark .gas-shortcut {
-  background: #1f2937;
-  border-color: #374151;
-  color: #fbbf24;
-}
-body.dark .gas-shortcut:hover {
-  background: #374151;
-}
 
 /* Header and date display in dark mode */
 body.dark .app-header {
@@ -206,4 +192,22 @@ body.dark #date-display {
   background: #0b1220 !important;
   color: #e5e7eb !important;
   border: 1px solid rgba(255,255,255,0.06) !important;
+}
+body.dark #alr8al{
+  color: rgba(255, 255, 255, 0.3);
+}
+#alr8al{
+ position: absolute; /* أو fixed إذا كنت تبغاه ثابت حتى لو نزلت بالصفحة */
+  bottom: 40px; /* المسافة من أسفل الصفحة، تقدر تعدلها */
+  left: 50%; /* يدفعه لمنتصف الشاشة */
+  transform: translateX(-50%); /* يضبطه في المنتصف بالملي */
+  text-align: center; /* عشان النص نفسه يكون متوسط */
+  margin: 0;
+  font-size: 6px;
+  color: rgba(0, 0, 0, 0.3);
+  
+}
+strong{
+  font-family: "saudi";
+font-size: 20px;
 }
