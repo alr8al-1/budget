@@ -50,7 +50,7 @@
         <div class="gas-title">
           <span class="gas-icon">⛽</span>
           <div>
-            <h3>ميزانية البنزين</h3>
+            <h3 class="gast">ميزانية البنزين</h3>
             <small class="text-muted">مستقلة عن المصاريف اليومية</small>
           </div>
         </div>
@@ -62,21 +62,13 @@
         <div class="progress-bar-fill" id="gasProgressBar" style="width: 100%;"></div>
       </div>
       <button class="btn-secondary" onclick="openGasModal()">+ تسجيل تعبئة بنزين</button>
-      <div class="gas-shortcuts">
-        <button class="gas-shortcut" data-gas-amount="15">15</button>
-        <button class="gas-shortcut" data-gas-amount="20">20</button>
-        <button class="gas-shortcut" data-gas-amount="30">30</button>
-        <button class="gas-shortcut" data-gas-amount="40">40</button>
-        <button class="gas-shortcut" data-gas-amount="50">50</button>
-        <button class="gas-shortcut" data-gas-amount="100">100</button>
-      </div>
     </section>
 
     <!-- كارت الادخار -->
     <section class="card savings-card">
       <div class="savings-content">
         <span class="savings-icon">🔒</span>
-        <div>
+        <div class="savv">
           <h3>الادخار المحمي</h3>
           <p>مبلغ مجمد لا يمس من المكافأة</p>
         </div>
@@ -88,7 +80,7 @@
 
     <!-- سجل العمليات -->
     <section class="card history-card">
-      <h3>سجل العمليات الأخيرة</h3>
+      <h3 id="sgl">سجل العمليات الأخيرة</h3>
       <ul class="history-list" id="historyList">
         <li class="empty-state">لا يوجد مصاريف مسجلة هذا الشهر</li>
       </ul>
@@ -130,9 +122,9 @@
 
   <div class="modal" id="settingsModal">
     <div class="modal-content">
-      <h3>إعدادات خطة الميزانية</h3>
+      <h3>إعدادات خطة المكافأة</h3>
       <div class="form-group">
-        <label>الميزانية الكلية (ريال)</label>
+        <label>المكافأة الكلية (ريال)</label>
         <input type="number" id="cfgTotal" value="990">
       </div>
       <div class="form-group">
@@ -154,7 +146,9 @@
       </div>
     </div>
   </div>
-
+<div id="alr8al">
+  <h1>disigned by 3li</h1>
+</div>
   <script src="app.js?v=3"></script>
 </body>
 </html>
