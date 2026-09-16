@@ -172,28 +172,97 @@ function deleteTransaction(id, type) {
 }
 
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
+
+
+function toggleOtherInput() {
+  const selectElement = document.getElementById('expenseType');
+  const otherContainer = document.getElementById('otherExpenseContainer');
+
+  // إظهار المربع فقط إذا كانت القيمة "other" وإخفاؤه في باقي الخيارات
+  if (selectElement.value === 'other') {
+    otherContainer.style.display = 'block'; // أظهر المربع
+  } else {
+    otherContainer.style.display = 'none';  // إخفِ المربع
+  }
+}
+
+
 function closeExpenseModal() { document.getElementById('expenseModal').classList.remove('active'); }
 
+// الكود الجديد والمعدل ليعمل مع القائمة وحقل "أخرى"
 function submitExpense() {
-  const desc = document.getElementById('expDesc').value.trim() || 'مصروف عام';
-  const amount = parseFloat(document.getElementById('expAmount').value);
+  const selectElement = document.getElementById('expenseType');
+  const otherInput = document.getElementById('otherExpense');
+  const amountInput = document.getElementById('expAmount');
+  const amount = parseFloat(amountInput.value);
 
+  let desc = "";
+
+  // 1. فحص الاختيار من القائمة المنسدلة
+  if (selectElement && selectElement.value === 'other') {
+    // إذا اختار "أخرى"، نأخذ النص من حقل الإدخال الإضافي
+    desc = otherInput ? otherInput.value.trim() : '';
+    if (!desc) {
+      alert('الرجاء كتابة تفاصيل المصروف في المربع!');
+      return; // إيقاف العملية إذا كان المربع فارغاً
+    }
+  } else if (selectElement) {
+    // إذا اختار خياراً عادياً، نأخذ النص الظاهر في القائمة (طعام، فواتير... إلخ)
+    desc = selectElement.options[selectElement.selectedIndex].text;
+  } else {
+    desc = 'مصروف عام';
+  }
+
+  // 2. إضافة المصروف وإعادة تعيين الحقول
   if (amount && amount > 0) {
+    const expensesRemaining = config.expensesBudget - expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    if (amount > expensesRemaining) {
+      alert('المبلغ يتجاوز المصاريف المتبقية في الميزانية');
+      return;
+    }
+
     expenses.push({ id: createId(), desc, amount, date: new Date().toISOString() });
     saveData();
     updateUI();
     closeExpenseModal();
-    document.getElementById('expDesc').value = '';
-    document.getElementById('expAmount').value = '';
+    
+    // تفريغ الحقول وإعادتها لوضعها الافتراضي
+    if (otherInput) otherInput.value = '';
+    if (selectElement) selectElement.selectedIndex = 0;
+    amountInput.value = '';
+    
+    // إخفاء حقل "أخرى" مجدداً
+    const otherContainer = document.getElementById('otherExpenseContainer');
+    if (otherContainer) otherContainer.style.display = 'none';
+  } else {
+    alert('الرجاء أدخل مبلغ صحيح!');
   }
 }
 
 function openGasModal() { document.getElementById('gasModal').classList.add('active'); }
 function closeGasModal() { document.getElementById('gasModal').classList.remove('active'); }
 
+function submitQuickGas(amount) {
+  const gasRemaining = config.gasBudget - gasExpenses.reduce((sum, gasExpense) => sum + gasExpense.amount, 0);
+  if (amount > gasRemaining) {
+    alert('المبلغ يتجاوز ميزانية البنزين المتبقية');
+    return;
+  }
+
+  gasExpenses.push({ id: createId(), amount, date: new Date().toISOString() });
+  saveData();
+  updateUI();
+}
+
 function submitGas() {
   const amount = parseFloat(document.getElementById('gasAmount').value);
   if (amount && amount > 0) {
+    const gasRemaining = config.gasBudget - gasExpenses.reduce((sum, gasExpense) => sum + gasExpense.amount, 0);
+    if (amount > gasRemaining) {
+      alert('المبلغ يتجاوز ميزانية البنزين المتبقية');
+      return;
+    }
+
     gasExpenses.push({ id: createId(), amount, date: new Date().toISOString() });
     saveData();
     updateUI();
