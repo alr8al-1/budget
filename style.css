@@ -92,6 +92,9 @@ body {
 .gas-amount { font-size: 18px; font-weight: 700; font-family: "Saudi"; }
 .progress-bar-bg { background: #e5e5ea; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
 .progress-bar-fill { background: #ff9500; height: 100%; transition: width 0.3s ease; }
+.gas-quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.gas-quick-actions button { padding: 9px 4px; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 8px; font-family: "Saudi"; font-weight: 700; cursor: pointer; }
+.gas-quick-actions button:active { background: #ffedd5; }
 .gast{ font-family: "Saudi"; }
 .text-muted { font-family: "Saudi"; }
 .btn-secondary {font-size: 20px; font-family: "Saudi"; }
@@ -176,6 +179,7 @@ body.dark .btn-primary { background: #0a84ff; }
 body.dark .btn-primary-lg { background: #10b981; }
 body.dark .btn-cancel { background: #1f2937; color: #e5e7eb; }
 body.dark .btn-delete { background: #331111; color: #ff7b7b; }
+body.dark .gas-quick-actions button { background: #431f0b; color: #fdba74; border-color: #7c2d12; }
 
 /* Header and date display in dark mode */
 body.dark .app-header {
@@ -210,4 +214,62 @@ body.dark #alr8al{
 strong{
   font-family: "saudi";
 font-size: 20px;
+}
+/* 1. تنسيق القائمة المنسدلة الرئيسي */
+#expenseType {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #333333;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  /* إزالة السهم الافتراضي البشع من المتصفح */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* إضافة سهم مخصص ناعم باستخدام صورةSVG */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666666' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 12px center; /* اتجاه السهم يسار لأن اللغة عربية */
+  padding-left: 40px; /* مسافة لكي لا يغطي النص على السهم */
+}
+
+/* 2. تأثير عند الضغط أو التحديد (Focus) */
+#expenseType:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+/* 3. تنسيق القائمة بالوضع الليلي (Dark Mode) */
+body.dark #expenseType {
+  background-color: #fdfdfd;
+  color: #4d4b4b;
+  border-color: #38383a;
+
+  /* تغيير لون السهم إلى أبيض للوضع الليلي */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+
+/* 4. تحسين شكل الخيارات بداخل القائمة */
+#expenseType option {
+  padding: 10px;
+  background-color: #ffffff;
+  color: #0e0d0d;
+}
+
+body.dark #expenseType option {
+  background-color: #f3efef;
+  color: #050505;
+}
+#otherExpense{
+  width: 100%;
+  padding: 14px 17px;
+  margin-bottom: 10px;
+  border-radius: 20px;
 }
