@@ -273,3 +273,5 @@ body.dark #expenseType option {
   margin-bottom: 10px;
   border-radius: 20px;
 }
+
+.modal-content h3{text-align: center; margin-bottom: 10px; font-size: 23px;}
