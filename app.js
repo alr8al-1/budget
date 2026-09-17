@@ -171,6 +171,7 @@ function deleteTransaction(id, type) {
   updateUI();
 }
 
+
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
 
 
@@ -370,5 +371,28 @@ try {
 // Hook dark mode button
 const darkBtn = document.getElementById('darkModeBtn');
 if (darkBtn) darkBtn.addEventListener('click', toggleDarkMode);
+
+// 1. الدالة المسؤولة عن الحذف
+function clearAllHistory() {
+  if (expenses.length === 0 && gasExpenses.length === 0) {
+    alert('سجل العمليات فارغ بالفعل!');
+    return;
+  }
+
+  if (confirm('هل أنت متأكد من حذف جميع سجلات المصاريف والبنزين؟')) {
+    expenses = [];
+    gasExpenses = [];
+    
+    saveData();
+    updateUI();
+  }
+}
+
+// 2. ربط الزر d-all بالدالة
+const deleteAllBtn = document.getElementById('d-all');
+
+if (deleteAllBtn) {
+  deleteAllBtn.addEventListener('click', clearAllHistory);
+}
 
 updateUI();
