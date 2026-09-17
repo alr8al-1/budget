@@ -95,7 +95,7 @@ body {
 .gas-quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
 .gas-quick-actions button { padding: 9px 4px; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 8px; font-family: "Saudi"; font-weight: 700; cursor: pointer; }
 .gas-quick-actions button:active { background: #ffedd5; }
-.gast{ font-family: "Saudi"; }
+.gast{ font-family: "Saudi"; color: rgb(250, 133, 0);}
 .text-muted { font-family: "Saudi"; }
 .btn-secondary {font-size: 20px; font-family: "Saudi"; }
 .savv h3{font-family: "saudi";}
