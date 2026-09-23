@@ -97,23 +97,26 @@ function updateUI() {
   updateBudgetStatus(dailyLimit, baseDaily);
 
   const dailyElem = document.getElementById('dailyLimitVal');
-  dailyElem.innerText = dailyLimit.toFixed(1);
+  // إخفاء الأصفار إذا لم يكن هناك هللات
+  dailyElem.innerText = Number(dailyLimit.toFixed(2));
+  
   if (dailyLimit < 0) {
-    dailyElem.style.color = '#ff3b30'; // تحويل اللون للأحمر في حال السالب
+    dailyElem.style.color = '#ff3b30';
   } else {
     dailyElem.style.color = '#ffffff';
   }
 
-  document.getElementById('totalExpensesRemaining').innerText = remainingExpensesBudget.toFixed(0);
+  document.getElementById('totalExpensesRemaining').innerText = Number(remainingExpensesBudget.toFixed(2));
   document.getElementById('daysRemaining').innerText = daysLeft;
 
   const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
   const gasRemaining = Math.max(0, config.gasBudget - totalGasSpent);
-  document.getElementById('gasRemaining').innerText = gasRemaining;
-  document.getElementById('gasTotalAlloc').innerText = config.gasBudget;
+  
+  document.getElementById('gasRemaining').innerText = Number(gasRemaining.toFixed(2));
+  document.getElementById('gasTotalAlloc').innerText = Number(config.gasBudget.toFixed(2));
   document.getElementById('gasProgressBar').style.width = Math.min(100, Math.max(0, (gasRemaining / config.gasBudget) * 100)) + '%';
 
-  document.getElementById('savingsVal').innerText = config.savingsBudget + ' ريال';
+  document.getElementById('savingsVal').innerText = Number(config.savingsBudget.toFixed(2)) + ' ريال';
 
   renderHistory();
 }
@@ -130,6 +133,7 @@ function renderHistory() {
     return;
   }
 
+  // استخدام Number(...) لإخفاء أصفار الهللات إن لم تكن موجودة
   list.innerHTML = allItems.map(item => `
     <li class="history-item" data-id="${item.id}" data-type="${item.type}">
       <div>
@@ -137,13 +141,12 @@ function renderHistory() {
         <small>${new Date(item.date).toLocaleDateString('ar-SA')}</small>
       </div>
       <div class="history-actions">
-        <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${item.amount} ريال</div>
+        <div class="history-amount ${item.type === 'gas' ? 'gas' : ''}">-${Number(item.amount.toFixed(2))} ريال</div>
         <button type="button" class="btn-delete" data-id="${item.id}" data-type="${item.type}" aria-label="حذف">حذف</button>
       </div>
     </li>
   `).join('');
 
-  // Attach safe click listeners to delete buttons (avoids inline onclick quoting issues)
   list.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.currentTarget.getAttribute('data-id');
@@ -171,51 +174,44 @@ function deleteTransaction(id, type) {
   updateUI();
 }
 
-
 function openExpenseModal() { document.getElementById('expenseModal').classList.add('active'); }
-
 
 function toggleOtherInput() {
   const selectElement = document.getElementById('expenseType');
   const otherContainer = document.getElementById('otherExpenseContainer');
 
-  // إظهار المربع فقط إذا كانت القيمة "other" وإخفاؤه في باقي الخيارات
   if (selectElement.value === 'other') {
-    otherContainer.style.display = 'block'; // أظهر المربع
+    otherContainer.style.display = 'block';
   } else {
-    otherContainer.style.display = 'none';  // إخفِ المربع
+    otherContainer.style.display = 'none';
   }
 }
 
-
 function closeExpenseModal() { document.getElementById('expenseModal').classList.remove('active'); }
 
-// الكود الجديد والمعدل ليعمل مع القائمة وحقل "أخرى"
 function submitExpense() {
   const selectElement = document.getElementById('expenseType');
   const otherInput = document.getElementById('otherExpense');
   const amountInput = document.getElementById('expAmount');
-  const amount = parseFloat(amountInput.value);
+  
+  const rawValue = amountInput.value.replace(',', '.');
+  const amount = parseFloat(rawValue);
 
   let desc = "";
 
-  // 1. فحص الاختيار من القائمة المنسدلة
   if (selectElement && selectElement.value === 'other') {
-    // إذا اختار "أخرى"، نأخذ النص من حقل الإدخال الإضافي
     desc = otherInput ? otherInput.value.trim() : '';
     if (!desc) {
       alert('الرجاء كتابة تفاصيل المصروف في المربع!');
-      return; // إيقاف العملية إذا كان المربع فارغاً
+      return;
     }
   } else if (selectElement) {
-    // إذا اختار خياراً عادياً، نأخذ النص الظاهر في القائمة (طعام، فواتير... إلخ)
     desc = selectElement.options[selectElement.selectedIndex].text;
   } else {
     desc = 'مصروف عام';
   }
 
-  // 2. إضافة المصروف وإعادة تعيين الحقول
-  if (amount && amount > 0) {
+  if (!isNaN(amount) && amount > 0) {
     const expensesRemaining = config.expensesBudget - expenses.reduce((sum, expense) => sum + expense.amount, 0);
     if (amount > expensesRemaining) {
       alert('المبلغ يتجاوز المصاريف المتبقية في الميزانية');
@@ -227,12 +223,10 @@ function submitExpense() {
     updateUI();
     closeExpenseModal();
     
-    // تفريغ الحقول وإعادتها لوضعها الافتراضي
     if (otherInput) otherInput.value = '';
     if (selectElement) selectElement.selectedIndex = 0;
     amountInput.value = '';
     
-    // إخفاء حقل "أخرى" مجدداً
     const otherContainer = document.getElementById('otherExpenseContainer');
     if (otherContainer) otherContainer.style.display = 'none';
   } else {
@@ -256,8 +250,11 @@ function submitQuickGas(amount) {
 }
 
 function submitGas() {
-  const amount = parseFloat(document.getElementById('gasAmount').value);
-  if (amount && amount > 0) {
+  const gasInput = document.getElementById('gasAmount');
+  const rawValue = gasInput.value.replace(',', '.');
+  const amount = parseFloat(rawValue);
+
+  if (!isNaN(amount) && amount > 0) {
     const gasRemaining = config.gasBudget - gasExpenses.reduce((sum, gasExpense) => sum + gasExpense.amount, 0);
     if (amount > gasRemaining) {
       alert('المبلغ يتجاوز ميزانية البنزين المتبقية');
@@ -268,7 +265,9 @@ function submitGas() {
     saveData();
     updateUI();
     closeGasModal();
-    document.getElementById('gasAmount').value = '';
+    gasInput.value = '';
+  } else {
+    alert('الرجاء أدخل مبلغ صحيح!');
   }
 }
 
@@ -294,12 +293,12 @@ function toggleSettingsModal() {
 }
 
 function saveSettings() {
-  config.totalAllowance = parseFloat(document.getElementById('cfgTotal').value) || 990;
-  config.expensesBudget = parseFloat(document.getElementById('cfgExpenses').value) || 400;
-  config.gasBudget = parseFloat(document.getElementById('cfgGas').value) || 400;
-  config.savingsBudget = parseFloat(document.getElementById('cfgSavings').value) || 190;
+  config.totalAllowance = parseFloat(document.getElementById('cfgTotal').value.replace(',', '.')) || 990;
+  config.expensesBudget = parseFloat(document.getElementById('cfgExpenses').value.replace(',', '.')) || 400;
+  config.gasBudget = parseFloat(document.getElementById('cfgGas').value.replace(',', '.')) || 400;
+  config.savingsBudget = parseFloat(document.getElementById('cfgSavings').value.replace(',', '.')) || 190;
 
-  const daysVal = parseFloat(document.getElementById('cfgDays').value);
+  const daysVal = parseFloat(document.getElementById('cfgDays').value.replace(',', '.'));
   config.customDays = daysVal > 0 ? daysVal : 30;
 
   saveData();
@@ -317,6 +316,7 @@ function resetMonth() {
     toggleSettingsModal();
   }
 }
+
 let isGregorian = true;
 
 function renderDate() {
@@ -341,38 +341,30 @@ function toggleDateFormat() {
   renderDate();
 }
 
-// Dark mode support
 function applyDarkMode(enabled) {
   document.body.classList.toggle('dark', enabled);
   const btn = document.getElementById('darkModeBtn');
   if (btn) btn.textContent = enabled ? '☀️' : '🌙';
   try {
     localStorage.setItem('budget_dark_mode', enabled ? '1' : '0');
-  } catch (e) {
-    // ignore
-  }
+  } catch (e) {}
 }
 
 function toggleDarkMode() {
   applyDarkMode(!document.body.classList.contains('dark'));
 }
 
-// تشغيل فوري
 renderDate();
-// تشغيل احتياطي بعد تحميل العناصر
 window.addEventListener('load', renderDate);
 
-// Initialize dark mode from preference
 try {
   const darkPref = localStorage.getItem('budget_dark_mode');
   if (darkPref === '1') applyDarkMode(true);
 } catch (e) {}
 
-// Hook dark mode button
 const darkBtn = document.getElementById('darkModeBtn');
 if (darkBtn) darkBtn.addEventListener('click', toggleDarkMode);
 
-// 1. الدالة المسؤولة عن الحذف
 function clearAllHistory() {
   if (expenses.length === 0 && gasExpenses.length === 0) {
     alert('سجل العمليات فارغ بالفعل!');
@@ -382,15 +374,12 @@ function clearAllHistory() {
   if (confirm('هل أنت متأكد من حذف جميع سجلات المصاريف والبنزين؟')) {
     expenses = [];
     gasExpenses = [];
-    
     saveData();
     updateUI();
   }
 }
 
-// 2. ربط الزر d-all بالدالة
 const deleteAllBtn = document.getElementById('d-all');
-
 if (deleteAllBtn) {
   deleteAllBtn.addEventListener('click', clearAllHistory);
 }
