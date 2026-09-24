@@ -106,10 +106,18 @@ function updateUI() {
     dailyElem.style.color = '#ffffff';
   }
 
+  
+  const totalExpensesSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
+  const totalMonthlyRemaining = config.totalAllowance - totalExpensesSpent - totalGasSpent;
+
+  const totalMonthlyRemainingElem = document.getElementById('totalMonthlyRemaining');
+  totalMonthlyRemainingElem.innerText = totalMonthlyRemaining.toFixed(0);
+  totalMonthlyRemainingElem.style.color = totalMonthlyRemaining < 0 ? '#ff3b30' : '#ffffff';
+
   document.getElementById('totalExpensesRemaining').innerText = Number(remainingExpensesBudget.toFixed(2));
   document.getElementById('daysRemaining').innerText = daysLeft;
 
-  const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
   const gasRemaining = Math.max(0, config.gasBudget - totalGasSpent);
   
   document.getElementById('gasRemaining').innerText = Number(gasRemaining.toFixed(2));
