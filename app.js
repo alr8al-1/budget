@@ -60,9 +60,14 @@ function calculateDailyLimit() {
   const diffTime = Math.abs(now - start);
   const elapsedDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-  const accumulatedBudgetToDate = baseDaily * Math.min(elapsedDays, totalDays);
-  const dailyLimit = accumulatedBudgetToDate - totalSpentExpenses;
+  // حساب الأيام المتبقية شريطة أن لا تقل عن 1 لمنع القسمة على صفر
+  const daysLeft = Math.max(1, totalDays - elapsedDays + 1);
+
+  // حساب المتبقي من ميزانية المصاريف
   const remainingExpensesBudget = totalBudget - totalSpentExpenses;
+
+  // الحسبة الديناميكية الجديدة: تقسيم المبلغ المتبقي على الأيام المتبقية
+  const dailyLimit = remainingExpensesBudget / daysLeft;
 
   return {
     dailyLimit: dailyLimit,
@@ -106,7 +111,6 @@ function updateUI() {
     dailyElem.style.color = '#ffffff';
   }
 
-  
   const totalExpensesSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const totalGasSpent = gasExpenses.reduce((sum, g) => sum + g.amount, 0);
   const totalMonthlyRemaining = config.totalAllowance - totalExpensesSpent - totalGasSpent;
